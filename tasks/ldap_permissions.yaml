@@ -1,0 +1,36 @@
+---
+# Change LDAP ACLs in UCS
+
+- name: "Template the ACL files"
+  tags:
+    - ucs
+  ansible.builtin.template:
+    src: "roles/ucs-provision/templates/{{item[0]}}"
+    dest: "/etc/univention/templates/files/etc/ldap/slapd.conf.d/{{item[1]}}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  become: true
+  loop:
+    - - "general.acl.j2"
+      - "51ansible_general.acl"
+
+- name: "Register the ACL files to /etc/ldap/slapd.conf"
+  tags:
+    - ucs
+  loop:
+    - "51ansible_general.acl"
+  ansible.builtin.blockinfile:
+    insertbefore: "(?m)\n.*\n.*\nSubfile: etc/ldap/slapd.conf.d/99translog"
+    path: "/etc/univention/templates/info/univention-ldap-server.info"
+    prepend_newline: true
+    marker: "# {mark} ANSIBLE MANAGED: {{item}}"
+    block:
+      "Type: subfile\nMultifile: etc/ldap/slapd.conf\nSubfile: etc/ldap/slapd.conf.d/{{item}}"
+
+- name: "Commit /etc/ldap/slapd.conf"
+  tags:
+    - ucs
+  univention.ucs_modules.univention_config_registry:
+    commit:
+      - "/etc/ldap/slapd.conf"
