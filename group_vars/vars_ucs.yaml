@@ -7,20 +7,6 @@ ansible_user: root
 ansible_password: "{{ vault_ucs_password }}"
 ansible_python_interpreter: /usr/bin/python3
 
-# each of these users will have their `access_level' to their `basedn'
-# the written line is
-# access to dn.subtree=`base_dn' by dn.exact=uid=`auto_accout_name',`auto_accout_position' `access_level' stop
-# at the top of the ACL
-#
-# Note that more ACLs are automatically written. See roles/ucs-provision/tasks/ldap_permissions.yaml
-ldap_automation_accounts:
-  -
-    auto_account_position: "cn=users,dc={{ucs_org_name}},dc=intranet"
-    auto_account_name: "CT_LDAP_search"
-    auto_account_password: "{{vault_ct_ldap_search_password}}"
-    basedn: "cn=self registered users,dc={{ucs_org_name}},dc=intranet"
-    access_level: "read"
-
 # For each of these Subtrees, the following ACL is written:
 # access to * by dn.subtree="{{item}}" disclose stop
 ldap_disable_read_access:
