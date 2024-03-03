@@ -40,7 +40,7 @@ Subfile: etc/ldap/slapd.conf.d/51user_defined.acl
 ```
 
 3. `ucr commit /etc/ldap/slapd.conf`
-    - NB: If your ACL does not have correct Syntax slapd.conf Syntax, this will throw a unicode error (for some reason)
+    - NB: If your ACL does not have correct slapd.conf Syntax, this will throw a unicode error (for some reason)
 4. make sure the ACL is now written to `/etc/ldap/slapd.conf`
 5. `service slapd restart`
 
