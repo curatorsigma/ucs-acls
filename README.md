@@ -33,6 +33,12 @@ access to *
 `/etc/univention/templates/files/etc/ldap/slapd.conf.d/51user_defined.acl`
 Important is the directory and that the file starts with a number in range(50,60), because ACL order matters.
 2. Write the following block (or multiple, if you have multiple userdefined ACL files) to `/etc/univention/templates/info/univention-ldap-server.info` so that it is in the correct position according to file name numbers.
+```
+Type: subfile
+Multifile: etc/ldap/slapd.conf
+Subfile: etc/ldap/slapd.conf.d/51user_defined.acl
+```
+
 3. `ucr commit /etc/ldap/slapd.conf`
     - NB: If your ACL does not have correct Syntax slapd.conf Syntax, this will throw a unicode error (for some reason)
 4. make sure the ACL is now written to `/etc/ldap/slapd.conf`
