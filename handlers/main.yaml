@@ -1,0 +1,8 @@
+---
+# Handlers for setting LDAP ACLs on UCS
+
+- name: "Restart slapd"
+    ansible.builtin.service:
+      name: "slapd"
+      state: "restarted"
+

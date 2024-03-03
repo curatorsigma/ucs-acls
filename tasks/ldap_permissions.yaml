@@ -14,6 +14,7 @@
   loop:
     - - "general.acl.j2"
       - "51ansible_general.acl"
+  notify: "Restart slapd"
 
 - name: "Register the ACL files to /etc/ldap/slapd.conf"
   tags:
