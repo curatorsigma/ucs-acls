@@ -20,10 +20,10 @@ access to *
     # Domain Admins get no special read access elsewhere, we have to add this manually
     # we break, because there are special write-access rules for parts of the LDAP tree
     # that we still need to parse (they come after this snippet)
-    by group/univentionGroup/uniqueMember="cn=Domain Admins,cn=groups,dc={{ucs_org_name}},dc=  intranet" read break
+    by group/univentionGroup/uniqueMember="cn=Domain Admins,cn=groups,LDAP_BASE" read break
     # these are the read accesses we have to override
     by dn.subtree="cn=users,dc=jgdresden,dc=intranet" disclose stop
-    by dn.subtree="cn=self registered users,dc=jgdresden,dc=intranet" disclose stop
+    by dn.subtree="cn=self registered users,LDAP_BASE" disclose stop
     # need to continue parsing for auth access (by anonymous auth comes later)
     by * break
 ```
