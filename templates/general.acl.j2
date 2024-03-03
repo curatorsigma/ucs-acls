@@ -8,14 +8,12 @@
 # NB:
 # - Some internals require the standard "access to * by user read" to function, which is why we blacklist instead of whitelist
 access to *
-  {# I do not know what this does, but this is explicitly set later, so we leave it alone #}
-  by sockname="PATH=/var/run/slapd/ldapi" break
-  {# break for admins so that other ACLs can allow write access as well #}
-  by group/univentionGroup/uniqueMember="cn=Domain Admins,cn=groups,dc={{ucs_org_name}},dc=intranet" read break
-  {# explicitly forbid authenticated users to have general read access
-	This line is the reason this file exists in the first place
-  #}
-  {%- for blacklist_subtree_dn in ldap_disable_read_access %}
-  by dn.subtree="{{blacklist_subtree_dn}}" disclose stop
-  {% endfor %}
+    by self break
+    by group/univentionGroup/uniqueMember="cn=Domain Admins,cn=groups,dc={{ucs_org_name}},dc=intranet" read break
+    {%- for blacklist_subtree_dn in ldap_disable_read_access %}
+
+    by dn.subtree="{{blacklist_subtree_dn}}" disclose stop
+    {%- endfor %}
+
+    by * break
 

@@ -15,11 +15,26 @@ A snippet of tasks in ansible and the associated templates that write the follow
 # for the users matching here
 
 access to *
-    # I explicitly break this because we later need to set read access for this socket
-    by sockname="PATH=/var/run/slapd/ldapi" break
-    # We want Admins to be able to read. we break so that write access can also be defined later (UCS handles this)
-    by group/univentionGroup/uniqueMember="cn=Domain Admins,cn=groups,dc=jgdresden,dc=intranet" read break
+    # do not change permissions for self
+    by self break
+    # Domain Admins get no special read access elsewhere, we have to add this manually
+    # we break, because there are special write-access rules for parts of the LDAP tree
+    # that we still need to parse (they come after this snippet)
+    by group/univentionGroup/uniqueMember="cn=Domain Admins,cn=groups,dc={{ucs_org_name}},dc=  intranet" read break
+    # these are the read accesses we have to override
     by dn.subtree="cn=users,dc=jgdresden,dc=intranet" disclose stop
     by dn.subtree="cn=self registered users,dc=jgdresden,dc=intranet" disclose stop
+    # need to continue parsing for auth access (by anonymous auth comes later)
+    by * break
 ```
+
+# How do I do this manually?
+1. Write the ACL file (like the above snippet) into
+`/etc/univention/templates/files/etc/ldap/slapd.conf.d/51user_defined.acl`
+Important is the directory and that the file starts with a number in range(50,60), because ACL order matters.
+2. Write the following block (or multiple, if you have multiple userdefined ACL files) to `/etc/univention/templates/info/univention-ldap-server.info` so that it is in the correct position according to file name numbers.
+3. `ucr commit /etc/ldap/slapd.conf`
+    - NB: If your ACL does not have correct Syntax slapd.conf Syntax, this will throw a unicode error (for some reason)
+4. make sure the ACL is now written to `/etc/ldap/slapd.conf`
+5. `service slapd restart`
 
